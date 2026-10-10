@@ -13,4 +13,8 @@
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\services\orders\Orders.Api\Orders.Api.csproj" />
+  </ItemGroup>
+
 </Project>
