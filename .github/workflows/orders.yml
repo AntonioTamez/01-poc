@@ -1,0 +1,114 @@
+name: orders
+
+# Builds, tests and ships the Orders API independently of other services.
+# Note: path filters are not evaluated for tag pushes, so `orders/v*` tags always run.
+on:
+  pull_request:
+    paths:
+      - src/services/orders/**
+      - tests/services/orders/**
+      - src/building-blocks/**
+      - src/aspire/Monorepo.ServiceDefaults/**
+      - Directory.*.props
+      - Directory.Build.targets
+      - global.json
+      - .github/workflows/orders.yml
+  push:
+    branches: [main]
+    tags: ['orders/v*']
+    paths:
+      - src/services/orders/**
+      - tests/services/orders/**
+      - src/building-blocks/**
+      - src/aspire/Monorepo.ServiceDefaults/**
+      - Directory.*.props
+      - Directory.Build.targets
+      - global.json
+      - .github/workflows/orders.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: orders-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  API_PROJECT: src/services/orders/Orders.Api
+  IMAGE_NAME: orders-api
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build
+        run: dotnet build ${{ env.API_PROJECT }} -c Release
+
+      - name: Unit tests
+        run: dotnet test --project tests/services/orders/Orders.UnitTests -c Release
+
+      - name: Architecture tests
+        run: dotnet test --project tests/services/orders/Orders.ArchitectureTests -c Release
+
+      - name: Integration tests
+        run: dotnet test --project tests/services/orders/Orders.IntegrationTests -c Release
+
+  publish:
+    needs: build-test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Compute image tags
+        id: meta
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/orders/v* ]]; then
+            version="${GITHUB_REF#refs/tags/orders/v}"
+            if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+              echo "::error::Tag '$GITHUB_REF_NAME' is not 'orders/vMAJOR.MINOR.PATCH[-prerelease]'."
+              exit 1
+            fi
+            tags="$version"
+            if [[ "$version" != *-* ]]; then
+              tags="$tags;latest"
+            fi
+          else
+            tags="main;sha-${GITHUB_SHA::7}"
+          fi
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+          echo "repository=${GITHUB_REPOSITORY_OWNER,,}/${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # ContainerImageTags is read from the environment to avoid quoting the ';' separator on the command line.
+      - name: Publish container
+        env:
+          ContainerImageTags: ${{ steps.meta.outputs.tags }}
+        run: >
+          dotnet publish ${{ env.API_PROJECT }} -c Release -t:PublishContainer
+          -p:ContainerRegistry=ghcr.io
+          -p:ContainerRepository=${{ steps.meta.outputs.repository }}
