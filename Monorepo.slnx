@@ -16,4 +16,16 @@
   <Folder Name="/src/building-blocks/">
     <Project Path="src/building-blocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
   </Folder>
+  <Folder Name="/src/services/" />
+  <Folder Name="/src/services/orders/">
+    <Project Path="src/services/orders/Orders.Application/Orders.Application.csproj" />
+    <Project Path="src/services/orders/Orders.Domain/Orders.Domain.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <File Path="tests/Directory.Build.props" />
+  </Folder>
+  <Folder Name="/tests/services/" />
+  <Folder Name="/tests/services/orders/">
+    <Project Path="tests/services/orders/Orders.UnitTests/Orders.UnitTests.csproj" />
+  </Folder>
 </Solution>

@@ -24,7 +24,7 @@ Empty repo. Need a reproducible base (shared config, CPM, CI) where each API bui
 ## Tasks
 - [x] T1 Root config files + solution — route: delegated (writer trigger: 2+ non-trivial files)
 - [x] T2 Aspire AppHost + ServiceDefaults + BuildingBlocks.Abstractions — route: delegated
-- [ ] T3 Orders Domain + Application (ports, PlaceOrder, GetOrderById) + UnitTests — route: delegated
+- [x] T3 Orders Domain + Application (ports, PlaceOrder, GetOrderById) + UnitTests — route: delegated
 - [ ] T4 Orders Infrastructure (EF Core + Postgres) + Api (Minimal API, OpenAPI, Scalar) + Integration/Architecture tests — route: delegated
 - [ ] T5 CI workflows (ci.yml, orders.yml) + README — route: delegated
 
@@ -35,6 +35,8 @@ Empty repo. Need a reproducible base (shared config, CPM, CI) where each API bui
 
 ## Progress / Evidence
 - T1: commit `a33e1bf` — `dotnet build Monorepo.slnx` 0 errors, 0 warnings.
+- T2: commit `fe3b5dc` — build 0 errors, 0 warnings (ASPIRE010 suppressed: CLI bundle not required; CA1716 suppressed on `Error`).
+- T3: build 0/0; `dotnet test --project tests/services/orders/Orders.UnitTests` 22/22 passed.
 
 ## Next step
-T3.
+T4.
