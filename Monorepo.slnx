@@ -8,4 +8,12 @@
     <File Path="nuget.config" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/aspire/">
+    <Project Path="src/aspire/Monorepo.AppHost/Monorepo.AppHost.csproj" />
+    <Project Path="src/aspire/Monorepo.ServiceDefaults/Monorepo.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/building-blocks/">
+    <Project Path="src/building-blocks/BuildingBlocks.Abstractions/BuildingBlocks.Abstractions.csproj" />
+  </Folder>
 </Solution>

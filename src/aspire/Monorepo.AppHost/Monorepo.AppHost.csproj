@@ -1,0 +1,16 @@
+<Project Sdk="Aspire.AppHost.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>3f6d2a4e-7c1b-4f0a-9b8e-5d2c1a7e9f30</UserSecretsId>
+    <IsPublishable>false</IsPublishable>
+    <!-- Use the dashboard/DCP NuGet packages instead of requiring the Aspire CLI bundle to be installed. -->
+    <AspireUseCliBundle>false</AspireUseCliBundle>
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+  </ItemGroup>
+
+</Project>
