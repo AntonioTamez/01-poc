@@ -1,0 +1,6 @@
+<Project>
+  <!-- Shared targets applied after each project file. Intentionally minimal. -->
+  <PropertyGroup>
+    <IsPublishable Condition="'$(IsPublishable)' == '' and '$(IsTestProject)' == 'true'">false</IsPublishable>
+  </PropertyGroup>
+</Project>
